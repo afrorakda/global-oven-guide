@@ -15,7 +15,7 @@
             --accent: #eee;
             --input-bg: #fafafa;
             --radius: 15px;
-            --gray: #bbb; /* placeholder用 */
+            --gray: #bbb;
         }
 
         body {
@@ -55,7 +55,7 @@
         }
         .temp-input {
             width: 100%;
-            padding: 18px 60px 18px 18px; /* 右側にclrボタン用の余白 */
+            padding: 18px 60px 18px 18px;
             border: 2px solid var(--accent);
             border-radius: var(--radius);
             background: var(--input-bg);
@@ -68,13 +68,11 @@
             -webkit-text-fill-color: var(--main) !important;
             opacity: 1 !important;
         }
-        /* 1. placeholderの色を濃く修正 */
         .temp-input::placeholder {
             color: var(--gray) !important;
             -webkit-text-fill-color: var(--gray) !important;
         }
 
-        /* 2. 各窓のクリアボタン (clr) */
         .clr-btn {
             position: absolute;
             right: 10px;
@@ -87,7 +85,7 @@
             font-weight: 800;
             font-size: 0.75rem;
             cursor: pointer;
-            display: none; /* 入力時のみ表示 */
+            display: none;
         }
         .input-group.active .clr-btn { display: block; }
 
@@ -141,19 +139,19 @@
     <div class="input-group" id="groupC">
         <div class="label">Celsius (°C)</div>
         <input type="number" id="inputC" class="temp-input" placeholder="e.g. 180" oninput="convert('C')" inputmode="decimal" onfocus="this.select()">
-        <button class="clr-btn" onclick="clearField('C')">clr</button>
+        <button class="clr-btn" onclick="clearAll('C')">clr</button>
     </div>
 
     <div class="input-group" id="groupF">
         <div class="label">Fahrenheit (°F)</div>
         <input type="number" id="inputF" class="temp-input" placeholder="e.g. 350" oninput="convert('F')" inputmode="decimal" onfocus="this.select()">
-        <button class="clr-btn" onclick="clearField('F')">clr</button>
+        <button class="clr-btn" onclick="clearAll('F')">clr</button>
     </div>
 
     <div class="input-group" id="groupGM">
         <div class="label">Gas Mark</div>
         <input type="number" id="inputGM" class="temp-input" placeholder="1 - 9" step="0.5" oninput="convert('GM')" inputmode="decimal" onfocus="this.select()">
-        <button class="clr-btn" onclick="clearField('GM')">clr</button>
+        <button class="clr-btn" onclick="clearAll('GM')">clr</button>
     </div>
 
     <div class="result-container" id="fanResultBox" style="display:none;">
@@ -189,31 +187,18 @@
 
 <script>
     const gmTable = [
-        {gm: 0.25, c: 110, f: 225},
-        {gm: 0.5,  c: 120, f: 250},
-        {gm: 1,    c: 140, f: 275},
-        {gm: 2,    c: 150, f: 300},
-        {gm: 3,    c: 160, f: 325},
-        {gm: 4,    c: 180, f: 350},
-        {gm: 5,    c: 190, f: 375},
-        {gm: 6,    c: 200, f: 400},
-        {gm: 7,    c: 220, f: 425},
-        {gm: 8,    c: 230, f: 450},
-        {gm: 9,    c: 240, f: 475}
+        {gm: 0.25, c: 110, f: 225}, {gm: 0.5, c: 120, f: 250}, {gm: 1, c: 140, f: 275},
+        {gm: 2, c: 150, f: 300}, {gm: 3, c: 160, f: 325}, {gm: 4, c: 180, f: 350},
+        {gm: 5, c: 190, f: 375}, {gm: 6, c: 200, f: 400}, {gm: 7, c: 220, f: 425},
+        {gm: 8, c: 230, f: 450}, {gm: 9, c: 240, f: 475}
     ];
 
     function convert(source) {
         const el = document.getElementById('input' + source);
-        const group = document.getElementById('group' + source);
         let val = parseFloat(el.value);
 
-        if (el.value.length > 0) {
-            group.classList.add('active');
-        } else {
-            group.classList.remove('active');
-            if (!document.getElementById('inputC').value && !document.getElementById('inputF').value && !document.getElementById('inputGM').value) {
-                clearAll();
-            }
+        if (el.value.length === 0) {
+            clearAll();
             return;
         }
 
@@ -222,29 +207,25 @@
             c = val;
             document.getElementById('inputF').value = Math.round(c * 9/5 + 32);
             document.getElementById('inputGM').value = findGM(c);
-            toggleClrs('C');
         } else if (source === 'F') {
             c = (val - 32) * 5/9;
             document.getElementById('inputC').value = Math.round(c);
             document.getElementById('inputGM').value = findGM(c);
-            toggleClrs('F');
         } else if (source === 'GM') {
             const match = gmTable.find(item => item.gm === val);
             c = match ? match.c : (val * 14) + 125;
             document.getElementById('inputC').value = Math.round(c);
             document.getElementById('inputF').value = Math.round(c * 9/5 + 32);
-            toggleClrs('GM');
         }
 
         document.getElementById('fanResultBox').style.display = 'block';
         document.getElementById('fanValue').innerText = (Math.round(c) - 20) + "°C / " + (Math.round(c * 9/5 + 32) - 25) + "°F";
-    }
-
-    function toggleClrs(activeSource) {
+        
+        // Toggle clr buttons visibility
         ['C', 'F', 'GM'].forEach(s => {
-            const el = document.getElementById('input' + s);
+            const input = document.getElementById('input' + s);
             const group = document.getElementById('group' + s);
-            if (el.value.length > 0) group.classList.add('active');
+            if (input.value.length > 0) group.classList.add('active');
             else group.classList.remove('active');
         });
     }
@@ -255,21 +236,13 @@
         return closest.gm;
     }
 
-    function clearField(source) {
-        document.getElementById('input' + source).value = '';
-        if (!document.getElementById('inputC').value && !document.getElementById('inputF').value && !document.getElementById('inputGM').value) {
-            clearAll();
-        } else {
-            toggleClrs('');
-        }
-    }
-
-    function clearAll() {
+    function clearAll(focusSource) {
         ['C', 'F', 'GM'].forEach(s => {
             document.getElementById('input' + s).value = '';
             document.getElementById('group' + s).classList.remove('active');
         });
         document.getElementById('fanResultBox').style.display = 'none';
+        if (focusSource) document.getElementById('input' + focusSource).focus();
     }
 
     function showModal() { document.getElementById('modal').style.display = 'flex'; }
