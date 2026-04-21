@@ -38,17 +38,8 @@
         .hub-link { text-decoration: none; font-size: 0.8rem; font-weight: 800; color: var(--main); background: var(--accent); padding: 8px 14px; border-radius: 12px; }
         .subtitle { font-size: 0.85rem; color: #999; font-weight: 700; margin-bottom: 25px; text-align: left; }
 
-        /* Preset Buttons */
-        .preset-group { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 25px; }
-        .preset-btn {
-            background: var(--input-bg); border: 2px solid var(--accent); border-radius: 12px;
-            padding: 10px 0; font-size: 0.85rem; font-weight: 800; color: var(--main);
-            cursor: pointer; transition: 0.1s;
-        }
-        .preset-btn:active { background: var(--accent); transform: scale(0.95); }
-
         /* Input Styles */
-        .input-group { margin-bottom: 15px; position: relative; }
+        .input-group { margin-bottom: 12px; position: relative; }
         .label { font-size: 0.7rem; font-weight: 900; margin-left: 5px; margin-bottom: 5px; color: #bbb; text-transform: uppercase; }
         .temp-input {
             width: 100%; padding: 16px 50px 16px 16px; border: 2px solid var(--accent); border-radius: var(--radius);
@@ -65,12 +56,22 @@
         }
         .input-group.active .clr-btn { display: flex; }
 
+        /* Preset Buttons - Bottom Position for Thumb Reach */
+        .preset-group { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 15px 0 25px; }
+        .preset-btn {
+            background: var(--input-bg); border: 2px solid var(--accent); border-radius: 12px;
+            padding: 12px 0; font-size: 0.85rem; font-weight: 900; color: var(--main);
+            cursor: pointer; transition: 0.1s;
+        }
+        .preset-btn:active { background: var(--accent); transform: scale(0.95); }
+
         /* Hero Result */
-        .result-container { margin-top: 15px; display: none; }
-        .fan-oven-box { background: var(--main); color: #fff; padding: 20px; border-radius: var(--radius); text-align: center; }
-        .fan-oven-title { font-size: 0.7rem; font-weight: 900; opacity: 0.7; margin-bottom: 8px; letter-spacing: 1px; }
-        .fan-oven-value { font-size: 1.8rem; font-weight: 900; -webkit-text-fill-color: #fff; }
-        .rule-text { font-size: 0.75rem; color: #bbb; margin-top: 12px; font-weight: 800; text-align: center; line-height: 1.4; }
+        .result-container { margin-top: 5px; display: none; }
+        .fan-oven-box { background: var(--main); color: #fff; padding: 22px; border-radius: var(--radius); text-align: center; }
+        .fan-oven-title { font-size: 0.7rem; font-weight: 900; opacity: 0.7; margin-bottom: 10px; letter-spacing: 1px; }
+        .fan-oven-value { font-size: 2.2rem; font-weight: 900; -webkit-text-fill-color: #fff; line-height: 1; }
+        .fan-oven-value small { font-size: 1.1rem; opacity: 0.8; margin-left: 2px; }
+        .rule-text { font-size: 0.75rem; color: #bbb; margin-top: 15px; font-weight: 800; text-align: center; line-height: 1.4; }
 
         /* Footer & Buttons */
         .footer-btns { margin-top: auto; padding: 40px 0 20px; text-align: center; }
@@ -102,14 +103,7 @@
         <h1>Oven Guide</h1>
         <a href="https://afrorakda.github.io/" class="hub-link">🏠 Hub</a>
     </header>
-    <p class="subtitle">Quick conversion for any recipe.</p>
-
-    <div class="preset-group">
-        <button class="preset-btn" onclick="applyPreset(160)">160°C</button>
-        <button class="preset-btn" onclick="applyPreset(180)">180°C</button>
-        <button class="preset-btn" onclick="applyPreset(200)">200°C</button>
-        <button class="preset-btn" onclick="applyPreset(220)">220°C</button>
-    </div>
+    <p class="subtitle">Celsius, Fahrenheit & Gas Mark conversion.</p>
 
     <div class="input-group" id="groupC">
         <div class="label">Celsius (°C)</div>
@@ -125,8 +119,15 @@
 
     <div class="input-group" id="groupGM">
         <div class="label">Gas Mark</div>
-        <input type="number" id="inputGM" class="temp-input" placeholder="1 - 9" step="0.5" oninput="convert('GM')" inputmode="decimal">
+        <input type="text" id="inputGM" class="temp-input" placeholder="1 - 9" oninput="convert('GM')" inputmode="decimal">
         <button class="clr-btn" onclick="clearAll()">×</button>
+    </div>
+
+    <div class="preset-group">
+        <button class="preset-btn" onclick="applyPreset(160)">160°C</button>
+        <button class="preset-btn" onclick="applyPreset(180)">180°C</button>
+        <button class="preset-btn" onclick="applyPreset(200)">200°C</button>
+        <button class="preset-btn" onclick="applyPreset(220)">220°C</button>
     </div>
 
     <div class="result-container" id="fanResultBox">
@@ -161,22 +162,25 @@
 
 <script>
     const gmTable = [
-        {gm: 0.25, c: 110, f: 225}, {gm: 0.5, c: 120, f: 250}, {gm: 1, c: 140, f: 275},
-        {gm: 2, c: 150, f: 300}, {gm: 3, c: 160, f: 325}, {gm: 4, c: 180, f: 350},
-        {gm: 5, c: 190, f: 375}, {gm: 6, c: 200, f: 400}, {gm: 7, c: 220, f: 425},
-        {gm: 8, c: 230, f: 450}, {gm: 9, c: 240, f: 475}
+        {gm: "1/4", c: 110, f: 225}, {gm: "1/2", c: 120, f: 250}, {gm: "1", c: 140, f: 275},
+        {gm: "2", c: 150, f: 300}, {gm: "3", c: 160, f: 325}, {gm: "4", c: 180, f: 350},
+        {gm: "5", c: 190, f: 375}, {gm: "6", c: 200, f: 400}, {gm: "7", c: 220, f: 425},
+        {gm: "8", c: 230, f: 450}, {gm: "9", c: 240, f: 475}
     ];
 
     function applyPreset(temp) {
         document.getElementById('inputC').value = temp;
+        // Close keyboard
+        document.querySelectorAll('input').forEach(i => i.blur());
         convert('C');
     }
 
     function convert(source) {
         const el = document.getElementById('input' + source);
-        let val = parseFloat(el.value);
+        let valStr = el.value.trim();
+        let val = parseFloat(valStr);
 
-        if (el.value.length === 0) {
+        if (valStr.length === 0) {
             hideResults();
             return;
         }
@@ -191,26 +195,38 @@
             document.getElementById('inputC').value = Math.round(c);
             document.getElementById('inputGM').value = findGM(c);
         } else if (source === 'GM') {
-            const match = gmTable.find(item => item.gm === val);
-            c = match ? match.c : (val * 14) + 125;
+            // Support fractional input 0.5 as 1/2
+            let numericGM = valStr === "1/2" ? 0.5 : (valStr === "1/4" ? 0.25 : parseFloat(valStr));
+            const match = gmTable.find(item => {
+                let itemVal = item.gm.includes('/') ? (item.gm === "1/2" ? 0.5 : 0.25) : parseFloat(item.gm);
+                return itemVal === numericGM;
+            });
+            c = match ? match.c : (numericGM * 14) + 125;
             document.getElementById('inputC').value = Math.round(c);
             document.getElementById('inputF').value = Math.round(c * 9/5 + 32);
         }
 
         document.getElementById('fanResultBox').style.display = 'block';
-        document.getElementById('fanValue').innerText = (Math.round(c) - 20) + "°C / " + (Math.round(c * 9/5 + 32) - 25) + "°F";
+        document.getElementById('fanValue').innerHTML = `${Math.round(c) - 20}<small>°C</small> / ${Math.round(c * 9/5 + 32) - 25}<small>°F</small>`;
         
+        updateClrBtns();
+    }
+
+    function findGM(c) {
+        if (c < 100) return "";
+        let closest = gmTable.reduce((prev, curr) => {
+            let prevC = prev.c, currC = curr.c;
+            return (Math.abs(currC - c) < Math.abs(prevC - c) ? curr : prev);
+        });
+        return closest.gm;
+    }
+
+    function updateClrBtns() {
         ['C', 'F', 'GM'].forEach(s => {
             const input = document.getElementById('input' + s);
             const group = document.getElementById('group' + s);
             group.classList.toggle('active', input.value.length > 0);
         });
-    }
-
-    function findGM(c) {
-        if (c < 100) return "";
-        let closest = gmTable.reduce((prev, curr) => (Math.abs(curr.c - c) < Math.abs(prev.c - c) ? curr : prev));
-        return closest.gm;
     }
 
     function clearAll() {
@@ -223,6 +239,7 @@
 
     function hideResults() {
         document.getElementById('fanResultBox').style.display = 'none';
+        updateClrBtns();
     }
 
     function showModal() { document.getElementById('modal').style.display = 'flex'; }
@@ -242,4 +259,3 @@
 
 </body>
 </html>
-のわ
