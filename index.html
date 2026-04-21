@@ -56,6 +56,13 @@
         }
         .input-group.active .clr-btn { display: flex; }
 
+        /* Fraction Helper Buttons */
+        .fraction-helper { position: absolute; right: 50px; top: 32px; display: flex; gap: 4px; }
+        .frac-btn {
+            background: var(--accent); border: none; padding: 4px 8px; border-radius: 6px;
+            font-size: 0.7rem; font-weight: 900; color: var(--main); cursor: pointer;
+        }
+
         /* Preset Buttons */
         .preset-group { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 15px 0 25px; }
         .preset-btn {
@@ -120,7 +127,11 @@
 
     <div class="input-group" id="groupGM">
         <div class="label">Gas Mark</div>
-        <input type="text" id="inputGM" class="temp-input" placeholder="1 - 9" oninput="handleInput('GM')" inputmode="decimal">
+        <input type="text" id="inputGM" class="temp-input" placeholder="1-9 or 1/2" oninput="handleInput('GM')" inputmode="decimal">
+        <div class="fraction-helper">
+            <button class="frac-btn" onclick="applyFraction('1/4')">1/4</button>
+            <button class="frac-btn" onclick="applyFraction('1/2')">1/2</button>
+        </div>
         <button class="clr-btn" onclick="clearAll()">×</button>
     </div>
 
@@ -136,7 +147,7 @@
             <div class="fan-oven-title">FOR FAN / CONVECTION OVEN</div>
             <div class="fan-oven-value" id="fanValue">-</div>
         </div>
-        <p class="rule-text">Adjusted to nearest 5°C / 10°F<br>for easy dial setting.</p>
+        <p class="rule-text">Standard adjustment:<br>Approx. -20°C / -25°F from recipe.</p>
     </div>
 
     <div class="footer-btns">
@@ -173,13 +184,23 @@
         document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('selected'));
         btn.classList.add('selected');
         document.getElementById('inputC').value = temp;
-        document.querySelectorAll('input').forEach(i => i.blur());
+        closeKeyboard();
         convert('C');
+    }
+
+    function applyFraction(frac) {
+        document.getElementById('inputGM').value = frac;
+        closeKeyboard();
+        convert('GM');
     }
 
     function handleInput(source) {
         document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('selected'));
         convert(source);
+    }
+
+    function closeKeyboard() {
+        document.querySelectorAll('input').forEach(i => i.blur());
     }
 
     function convert(source) {
@@ -205,14 +226,13 @@
             c = match ? match.c : (numericGM * 14) + 125;
             document.getElementById('inputC').value = Math.round(c);
             document.getElementById('inputF').value = Math.round(c * 9/5 + 32);
-            // Auto-format to fraction for visual consistency
             if (valStr === "0.5") el.value = "1/2";
             if (valStr === "0.25") el.value = "1/4";
         }
 
-        // Fan Oven Calculation with "Setting Rounding"
-        let fanC = Math.round((c - 20) / 5) * 5; // Round to nearest 5
-        let fanF = Math.round((c * 9/5 + 32 - 25) / 10) * 10; // Round to nearest 10
+        // Round to nearest 5 for C, nearest 10 for F (Standard dial steps)
+        let fanC = Math.round((c - 20) / 5) * 5;
+        let fanF = Math.round((c * 9/5 + 32 - 25) / 10) * 10;
 
         document.getElementById('fanResultBox').style.display = 'block';
         document.getElementById('fanValue').innerHTML = `${fanC}<small>°C</small> / ${fanF}<small>°F</small>`;
