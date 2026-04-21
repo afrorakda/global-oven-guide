@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Global Oven Guide</title>
     
     <link rel="icon" href="image_62.png">
@@ -18,6 +18,8 @@
             --gray: #bbb;
         }
 
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             background-color: var(--bg);
@@ -27,19 +29,39 @@
             justify-content: center;
             min-height: 100vh;
             -webkit-font-smoothing: antialiased;
+            padding: env(safe-area-inset-top, 20px) 20px env(safe-area-inset-bottom, 20px) 20px;
         }
 
         .container {
             width: 100%;
             max-width: 420px;
-            padding: 40px 20px;
-            box-sizing: border-box;
-            text-align: center;
+            display: flex;
+            flex-direction: column;
         }
 
-        h1 { font-size: 1.8rem; font-weight: 800; margin-bottom: 8px; letter-spacing: -1px; }
-        .subtitle { font-size: 0.85rem; color: #666; font-weight: 500; margin-bottom: 30px; }
+        /* Header with Hub Button */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 5px;
+        }
 
+        h1 { font-size: 1.8rem; font-weight: 900; letter-spacing: -1.5px; margin: 0; }
+        
+        .hub-link {
+            text-decoration: none;
+            font-size: 0.8rem;
+            font-weight: 800;
+            color: var(--main);
+            background: var(--accent);
+            padding: 8px 14px;
+            border-radius: 12px;
+        }
+
+        .subtitle { font-size: 0.85rem; color: #999; font-weight: 700; margin-bottom: 30px; text-align: left; }
+
+        /* Input Styles */
         .input-group {
             margin-bottom: 20px;
             text-align: left;
@@ -47,10 +69,10 @@
         }
         .label {
             font-size: 0.75rem;
-            font-weight: 800;
+            font-weight: 900;
             margin-left: 5px;
             margin-bottom: 5px;
-            color: #999;
+            color: #bbb;
             text-transform: uppercase;
         }
         .temp-input {
@@ -62,7 +84,6 @@
             font-size: 1.4rem;
             font-weight: 800;
             color: var(--main) !important;
-            box-sizing: border-box;
             outline: none;
             -webkit-appearance: none;
             -webkit-text-fill-color: var(--main) !important;
@@ -75,83 +96,96 @@
 
         .clr-btn {
             position: absolute;
-            right: 10px;
-            bottom: 8px;
-            background: var(--accent);
-            color: var(--main);
+            right: 12px;
+            bottom: 12px;
+            background: #ccc;
+            color: #fff;
             border: none;
-            padding: 8px 12px;
-            border-radius: 10px;
-            font-weight: 800;
-            font-size: 0.75rem;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            font-weight: 900;
+            font-size: 16px;
             cursor: pointer;
             display: none;
+            align-items: center;
+            justify-content: center;
         }
-        .input-group.active .clr-btn { display: block; }
+        .input-group.active .clr-btn { display: flex; }
 
+        /* Result Styles */
         .result-container {
-            margin-top: 30px;
+            margin-top: 10px;
             background: var(--input-bg);
             padding: 20px;
             border-radius: var(--radius);
-            border: 1px solid #f0f0f0;
+            border: 2px solid var(--accent);
         }
         .fan-oven-box {
             background: var(--main);
             color: #fff;
-            padding: 15px;
+            padding: 18px;
             border-radius: var(--radius);
-            margin-top: 15px;
         }
-        .fan-oven-title { font-size: 0.7rem; font-weight: 700; opacity: 0.8; margin-bottom: 5px; }
-        .fan-oven-value { font-size: 1.5rem; font-weight: 900; }
+        .fan-oven-title { font-size: 0.7rem; font-weight: 900; opacity: 0.7; margin-bottom: 6px; letter-spacing: 0.5px; }
+        .fan-oven-value { font-size: 1.5rem; font-weight: 900; -webkit-text-fill-color: #fff; }
 
-        footer { margin-top: 50px; font-size: 11px; color: #aaa; line-height: 1.8; }
-        .footer-btns { margin-top: 30px; }
+        /* Footer & Buttons */
+        .footer-btns { margin-top: auto; padding: 40px 0 20px; text-align: center; }
         .kofi-btn {
-            display: inline-block; background: var(--main); color: #fff;
-            padding: 12px 25px; border-radius: var(--radius);
-            text-decoration: none; font-weight: bold; font-size: 14px; margin-bottom: 12px;
+            display: inline-flex; align-items: center; justify-content: center;
+            background: var(--main); color: #fff; width: 100%; max-width: 320px;
+            padding: 16px; border-radius: var(--radius);
+            text-decoration: none; font-weight: 900; font-size: 0.9rem; margin-bottom: 12px;
+            -webkit-text-fill-color: #fff;
         }
         .home-btn {
-            display: block; width: 60%; margin: 0 auto; background: var(--accent);
-            color: var(--main); border: none; padding: 10px;
-            border-radius: var(--radius); font-weight: 700; font-size: 13px; cursor: pointer;
+            display: block; width: 100%; max-width: 320px; margin: 0 auto; 
+            background: var(--accent); color: var(--main); border: none; 
+            padding: 12px; border-radius: var(--radius); font-weight: 800; font-size: 0.85rem; cursor: pointer;
         }
 
+        footer { padding: 20px 0; text-align: center; font-size: 0.7rem; color: #bbb; line-height: 1.6; font-weight: 600; }
+        footer a { color: inherit; text-decoration: underline; }
+
+        /* Modal */
         #modal {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.6); align-items: center; justify-content: center; z-index: 100;
+            background: rgba(0,0,0,0.6); align-items: center; justify-content: center; z-index: 1000;
+            backdrop-filter: blur(4px);
         }
         .modal-content {
-            background: #fff; width: 85%; max-width: 320px; padding: 30px;
+            background: #fff; width: 90%; max-width: 320px; padding: 35px;
             border-radius: var(--radius); text-align: left; position: relative;
         }
-        .close-x { position: absolute; top: 15px; right: 20px; font-size: 20px; color: #ccc; cursor: pointer; }
+        .close-x { position: absolute; top: 15px; right: 20px; font-size: 24px; color: #ccc; cursor: pointer; font-weight: bold; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>Global Oven Guide</h1>
-    <p class="subtitle">Instant conversion for Celsius, Fahrenheit & Gas Mark.</p>
+    <header>
+        <h1>Oven Guide</h1>
+        <a href="https://afrorakda.github.io/" class="hub-link">🏠 Hub</a>
+    </header>
+    <p class="subtitle">Celsius, Fahrenheit & Gas Mark conversion.</p>
 
     <div class="input-group" id="groupC">
         <div class="label">Celsius (°C)</div>
-        <input type="number" id="inputC" class="temp-input" placeholder="e.g. 180" oninput="convert('C')" inputmode="decimal" onfocus="this.select()">
-        <button class="clr-btn" onclick="clearAll('C')">clr</button>
+        <input type="number" id="inputC" class="temp-input" placeholder="e.g. 180" oninput="convert('C')" inputmode="decimal">
+        <button class="clr-btn" onclick="clearAll()">×</button>
     </div>
 
     <div class="input-group" id="groupF">
         <div class="label">Fahrenheit (°F)</div>
-        <input type="number" id="inputF" class="temp-input" placeholder="e.g. 350" oninput="convert('F')" inputmode="decimal" onfocus="this.select()">
-        <button class="clr-btn" onclick="clearAll('F')">clr</button>
+        <input type="number" id="inputF" class="temp-input" placeholder="e.g. 350" oninput="convert('F')" inputmode="decimal">
+        <button class="clr-btn" onclick="clearAll()">×</button>
     </div>
 
     <div class="input-group" id="groupGM">
         <div class="label">Gas Mark</div>
-        <input type="number" id="inputGM" class="temp-input" placeholder="1 - 9" step="0.5" oninput="convert('GM')" inputmode="decimal" onfocus="this.select()">
-        <button class="clr-btn" onclick="clearAll('GM')">clr</button>
+        <input type="number" id="inputGM" class="temp-input" placeholder="1 - 9" step="0.5" oninput="convert('GM')" inputmode="decimal">
+        <button class="clr-btn" onclick="clearAll()">×</button>
     </div>
 
     <div class="result-container" id="fanResultBox" style="display:none;">
@@ -159,8 +193,8 @@
             <div class="fan-oven-title">FOR FAN / CONVECTION OVEN</div>
             <div class="fan-oven-value" id="fanValue">-</div>
         </div>
-        <p style="font-size: 0.75rem; color: #888; margin-top: 10px; font-weight: 600;">
-            Suggested setting: -20°C / -25°F from recipe.
+        <p style="font-size: 0.75rem; color: #bbb; margin-top: 10px; font-weight: 800; text-align: center;">
+            Rule: -20°C / -25°F from standard recipe.
         </p>
     </div>
 
@@ -169,19 +203,21 @@
         <button class="home-btn" onclick="showModal()">Add to Home Screen</button>
     </div>
 
-    <footer>
-        <div>No login / No tracking / No ads / Browser only</div>
-        <div>Privacy Policy / afrorakda © 2026</div>
+    <footer id="dynamicFooter">
+        No login / No tracking / No ads / Browser only<br>
+        <a href="https://afrorakda.com/privacy/">Privacy Policy</a> / afrorakda © 2026
     </footer>
 </div>
 
 <div id="modal" onclick="hideModal()">
     <div class="modal-content" onclick="event.stopPropagation()">
         <span class="close-x" onclick="hideModal()">×</span>
-        <h3>📱 Install</h3>
-        <p>Add to your home screen.</p>
-        <p>🍏 <strong>iPhone (Safari):</strong><br>Tap Share, then Add to Home Screen.</p>
-        <p>🤖 <strong>Android (Chrome):</strong><br>Tap Menu (⋮), then Add to Home Screen.</p>
+        <h3 style="margin-bottom: 10px; font-weight: 900;">📱 Install</h3>
+        <p style="margin-bottom: 20px; color: #999; font-weight: 700; font-size: 0.85rem;">Add to your home screen.</p>
+        <div style="font-size: 0.9rem; line-height: 1.6; font-weight: 700;">
+            <p>🍏 <strong>iPhone:</strong><br>Share > Add to Home Screen</p>
+            <p style="margin-top:10px;">🤖 <strong>Android:</strong><br>Menu (⋮) > Add to Home Screen</p>
+        </div>
     </div>
 </div>
 
@@ -198,7 +234,7 @@
         let val = parseFloat(el.value);
 
         if (el.value.length === 0) {
-            clearAll();
+            hideResults();
             return;
         }
 
@@ -221,7 +257,6 @@
         document.getElementById('fanResultBox').style.display = 'block';
         document.getElementById('fanValue').innerText = (Math.round(c) - 20) + "°C / " + (Math.round(c * 9/5 + 32) - 25) + "°F";
         
-        // Toggle clr buttons visibility
         ['C', 'F', 'GM'].forEach(s => {
             const input = document.getElementById('input' + s);
             const group = document.getElementById('group' + s);
@@ -236,17 +271,32 @@
         return closest.gm;
     }
 
-    function clearAll(focusSource) {
+    function clearAll() {
         ['C', 'F', 'GM'].forEach(s => {
             document.getElementById('input' + s).value = '';
             document.getElementById('group' + s).classList.remove('active');
         });
+        hideResults();
+    }
+
+    function hideResults() {
         document.getElementById('fanResultBox').style.display = 'none';
-        if (focusSource) document.getElementById('input' + focusSource).focus();
+        ['C', 'F', 'GM'].forEach(s => document.getElementById('group' + s).classList.remove('active'));
     }
 
     function showModal() { document.getElementById('modal').style.display = 'flex'; }
     function hideModal() { document.getElementById('modal').style.display = 'none'; }
+
+    async function loadFooter() {
+        try {
+            const res = await fetch('footer.json');
+            if (res.ok) {
+                const data = await res.json();
+                if (data.footerHtml) document.getElementById('dynamicFooter').innerHTML = data.footerHtml;
+            }
+        } catch (e) {}
+    }
+    window.onload = loadFooter;
 </script>
 
 </body>
