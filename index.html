@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Global Oven Guide</title>
+    <title>Oven Guide</title>
     
     <link rel="icon" href="image_62.png">
     <link rel="apple-touch-icon" href="image_62.png">
@@ -18,13 +18,12 @@
             --gray: #bbb;
         }
 
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             background-color: var(--bg);
             color: var(--main);
-            margin: 0;
             display: flex;
             justify-content: center;
             min-height: 100vh;
@@ -32,132 +31,67 @@
             padding: env(safe-area-inset-top, 20px) 20px env(safe-area-inset-bottom, 20px) 20px;
         }
 
-        .container {
-            width: 100%;
-            max-width: 420px;
-            display: flex;
-            flex-direction: column;
-        }
+        .container { width: 100%; max-width: 420px; display: flex; flex-direction: column; }
 
-        /* Header with Hub Button */
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 5px;
-        }
+        header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
+        h1 { font-size: 1.8rem; font-weight: 900; letter-spacing: -1.5px; }
+        .hub-link { text-decoration: none; font-size: 0.8rem; font-weight: 800; color: var(--main); background: var(--accent); padding: 8px 14px; border-radius: 12px; }
+        .subtitle { font-size: 0.85rem; color: #999; font-weight: 700; margin-bottom: 25px; text-align: left; }
 
-        h1 { font-size: 1.8rem; font-weight: 900; letter-spacing: -1.5px; margin: 0; }
-        
-        .hub-link {
-            text-decoration: none;
-            font-size: 0.8rem;
-            font-weight: 800;
-            color: var(--main);
-            background: var(--accent);
-            padding: 8px 14px;
-            border-radius: 12px;
+        /* Preset Buttons */
+        .preset-group { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 25px; }
+        .preset-btn {
+            background: var(--input-bg); border: 2px solid var(--accent); border-radius: 12px;
+            padding: 10px 0; font-size: 0.85rem; font-weight: 800; color: var(--main);
+            cursor: pointer; transition: 0.1s;
         }
-
-        .subtitle { font-size: 0.85rem; color: #999; font-weight: 700; margin-bottom: 30px; text-align: left; }
+        .preset-btn:active { background: var(--accent); transform: scale(0.95); }
 
         /* Input Styles */
-        .input-group {
-            margin-bottom: 20px;
-            text-align: left;
-            position: relative;
-        }
-        .label {
-            font-size: 0.75rem;
-            font-weight: 900;
-            margin-left: 5px;
-            margin-bottom: 5px;
-            color: #bbb;
-            text-transform: uppercase;
-        }
+        .input-group { margin-bottom: 15px; position: relative; }
+        .label { font-size: 0.7rem; font-weight: 900; margin-left: 5px; margin-bottom: 5px; color: #bbb; text-transform: uppercase; }
         .temp-input {
-            width: 100%;
-            padding: 18px 60px 18px 18px;
-            border: 2px solid var(--accent);
-            border-radius: var(--radius);
-            background: var(--input-bg);
-            font-size: 1.4rem;
-            font-weight: 800;
-            color: var(--main) !important;
-            outline: none;
-            -webkit-appearance: none;
-            -webkit-text-fill-color: var(--main) !important;
-            opacity: 1 !important;
+            width: 100%; padding: 16px 50px 16px 16px; border: 2px solid var(--accent); border-radius: var(--radius);
+            background: var(--input-bg); font-size: 1.4rem; font-weight: 800; color: var(--main) !important;
+            outline: none; -webkit-appearance: none; -webkit-text-fill-color: var(--main) !important; opacity: 1 !important;
         }
-        .temp-input::placeholder {
-            color: var(--gray) !important;
-            -webkit-text-fill-color: var(--gray) !important;
-        }
+        .temp-input:focus { border-color: var(--main); }
+        .temp-input::placeholder { color: var(--gray) !important; -webkit-text-fill-color: var(--gray) !important; }
 
         .clr-btn {
-            position: absolute;
-            right: 12px;
-            bottom: 12px;
-            background: #ccc;
-            color: #fff;
-            border: none;
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            font-weight: 900;
-            font-size: 16px;
-            cursor: pointer;
-            display: none;
-            align-items: center;
-            justify-content: center;
+            position: absolute; right: 12px; bottom: 12px; background: #ccc; color: #fff;
+            border: none; width: 28px; height: 28px; border-radius: 50%; font-weight: 900; font-size: 16px;
+            display: none; align-items: center; justify-content: center; cursor: pointer;
         }
         .input-group.active .clr-btn { display: flex; }
 
-        /* Result Styles */
-        .result-container {
-            margin-top: 10px;
-            background: var(--input-bg);
-            padding: 20px;
-            border-radius: var(--radius);
-            border: 2px solid var(--accent);
-        }
-        .fan-oven-box {
-            background: var(--main);
-            color: #fff;
-            padding: 18px;
-            border-radius: var(--radius);
-        }
-        .fan-oven-title { font-size: 0.7rem; font-weight: 900; opacity: 0.7; margin-bottom: 6px; letter-spacing: 0.5px; }
-        .fan-oven-value { font-size: 1.5rem; font-weight: 900; -webkit-text-fill-color: #fff; }
+        /* Hero Result */
+        .result-container { margin-top: 15px; display: none; }
+        .fan-oven-box { background: var(--main); color: #fff; padding: 20px; border-radius: var(--radius); text-align: center; }
+        .fan-oven-title { font-size: 0.7rem; font-weight: 900; opacity: 0.7; margin-bottom: 8px; letter-spacing: 1px; }
+        .fan-oven-value { font-size: 1.8rem; font-weight: 900; -webkit-text-fill-color: #fff; }
+        .rule-text { font-size: 0.75rem; color: #bbb; margin-top: 12px; font-weight: 800; text-align: center; line-height: 1.4; }
 
         /* Footer & Buttons */
         .footer-btns { margin-top: auto; padding: 40px 0 20px; text-align: center; }
         .kofi-btn {
-            display: inline-flex; align-items: center; justify-content: center;
-            background: var(--main); color: #fff; width: 100%; max-width: 320px;
-            padding: 16px; border-radius: var(--radius);
-            text-decoration: none; font-weight: 900; font-size: 0.9rem; margin-bottom: 12px;
-            -webkit-text-fill-color: #fff;
+            display: inline-flex; align-items: center; justify-content: center; background: var(--main); color: #fff;
+            width: 100%; max-width: 320px; padding: 16px; border-radius: var(--radius);
+            text-decoration: none; font-weight: 900; font-size: 0.9rem; margin-bottom: 12px; -webkit-text-fill-color: #fff;
         }
         .home-btn {
-            display: block; width: 100%; max-width: 320px; margin: 0 auto; 
-            background: var(--accent); color: var(--main); border: none; 
-            padding: 12px; border-radius: var(--radius); font-weight: 800; font-size: 0.85rem; cursor: pointer;
+            display: block; width: 100%; max-width: 320px; margin: 0 auto; background: var(--accent); color: var(--main);
+            border: none; padding: 12px; border-radius: var(--radius); font-weight: 800; font-size: 0.85rem; cursor: pointer;
         }
 
         footer { padding: 20px 0; text-align: center; font-size: 0.7rem; color: #bbb; line-height: 1.6; font-weight: 600; }
         footer a { color: inherit; text-decoration: underline; }
 
-        /* Modal */
         #modal {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.6); align-items: center; justify-content: center; z-index: 1000;
-            backdrop-filter: blur(4px);
+            background: rgba(0,0,0,0.6); align-items: center; justify-content: center; z-index: 1000; backdrop-filter: blur(4px);
         }
-        .modal-content {
-            background: #fff; width: 90%; max-width: 320px; padding: 35px;
-            border-radius: var(--radius); text-align: left; position: relative;
-        }
+        .modal-content { background: #fff; width: 90%; max-width: 320px; padding: 35px; border-radius: var(--radius); text-align: left; position: relative; }
         .close-x { position: absolute; top: 15px; right: 20px; font-size: 24px; color: #ccc; cursor: pointer; font-weight: bold; }
     </style>
 </head>
@@ -168,7 +102,14 @@
         <h1>Oven Guide</h1>
         <a href="https://afrorakda.github.io/" class="hub-link">🏠 Hub</a>
     </header>
-    <p class="subtitle">Celsius, Fahrenheit & Gas Mark conversion.</p>
+    <p class="subtitle">Quick conversion for any recipe.</p>
+
+    <div class="preset-group">
+        <button class="preset-btn" onclick="applyPreset(160)">160°C</button>
+        <button class="preset-btn" onclick="applyPreset(180)">180°C</button>
+        <button class="preset-btn" onclick="applyPreset(200)">200°C</button>
+        <button class="preset-btn" onclick="applyPreset(220)">220°C</button>
+    </div>
 
     <div class="input-group" id="groupC">
         <div class="label">Celsius (°C)</div>
@@ -188,14 +129,12 @@
         <button class="clr-btn" onclick="clearAll()">×</button>
     </div>
 
-    <div class="result-container" id="fanResultBox" style="display:none;">
+    <div class="result-container" id="fanResultBox">
         <div class="fan-oven-box">
             <div class="fan-oven-title">FOR FAN / CONVECTION OVEN</div>
             <div class="fan-oven-value" id="fanValue">-</div>
         </div>
-        <p style="font-size: 0.75rem; color: #bbb; margin-top: 10px; font-weight: 800; text-align: center;">
-            Rule: -20°C / -25°F from standard recipe.
-        </p>
+        <p class="rule-text">Standard adjustment:<br>-20°C / -25°F from recipe.</p>
     </div>
 
     <div class="footer-btns">
@@ -213,7 +152,6 @@
     <div class="modal-content" onclick="event.stopPropagation()">
         <span class="close-x" onclick="hideModal()">×</span>
         <h3 style="margin-bottom: 10px; font-weight: 900;">📱 Install</h3>
-        <p style="margin-bottom: 20px; color: #999; font-weight: 700; font-size: 0.85rem;">Add to your home screen.</p>
         <div style="font-size: 0.9rem; line-height: 1.6; font-weight: 700;">
             <p>🍏 <strong>iPhone:</strong><br>Share > Add to Home Screen</p>
             <p style="margin-top:10px;">🤖 <strong>Android:</strong><br>Menu (⋮) > Add to Home Screen</p>
@@ -228,6 +166,11 @@
         {gm: 5, c: 190, f: 375}, {gm: 6, c: 200, f: 400}, {gm: 7, c: 220, f: 425},
         {gm: 8, c: 230, f: 450}, {gm: 9, c: 240, f: 475}
     ];
+
+    function applyPreset(temp) {
+        document.getElementById('inputC').value = temp;
+        convert('C');
+    }
 
     function convert(source) {
         const el = document.getElementById('input' + source);
@@ -260,8 +203,7 @@
         ['C', 'F', 'GM'].forEach(s => {
             const input = document.getElementById('input' + s);
             const group = document.getElementById('group' + s);
-            if (input.value.length > 0) group.classList.add('active');
-            else group.classList.remove('active');
+            group.classList.toggle('active', input.value.length > 0);
         });
     }
 
@@ -281,7 +223,6 @@
 
     function hideResults() {
         document.getElementById('fanResultBox').style.display = 'none';
-        ['C', 'F', 'GM'].forEach(s => document.getElementById('group' + s).classList.remove('active'));
     }
 
     function showModal() { document.getElementById('modal').style.display = 'flex'; }
@@ -301,3 +242,4 @@
 
 </body>
 </html>
+のわ
