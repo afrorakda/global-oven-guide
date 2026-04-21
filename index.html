@@ -56,14 +56,15 @@
         }
         .input-group.active .clr-btn { display: flex; }
 
-        /* Preset Buttons - Bottom Position for Thumb Reach */
+        /* Preset Buttons */
         .preset-group { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 15px 0 25px; }
         .preset-btn {
             background: var(--input-bg); border: 2px solid var(--accent); border-radius: 12px;
             padding: 12px 0; font-size: 0.85rem; font-weight: 900; color: var(--main);
             cursor: pointer; transition: 0.1s;
         }
-        .preset-btn:active { background: var(--accent); transform: scale(0.95); }
+        .preset-btn.selected { background: var(--main); color: #fff; border-color: var(--main); }
+        .preset-btn:active { transform: scale(0.95); }
 
         /* Hero Result */
         .result-container { margin-top: 5px; display: none; }
@@ -107,27 +108,27 @@
 
     <div class="input-group" id="groupC">
         <div class="label">Celsius (°C)</div>
-        <input type="number" id="inputC" class="temp-input" placeholder="e.g. 180" oninput="convert('C')" inputmode="decimal">
+        <input type="number" id="inputC" class="temp-input" placeholder="e.g. 180" oninput="handleInput('C')" inputmode="decimal">
         <button class="clr-btn" onclick="clearAll()">×</button>
     </div>
 
     <div class="input-group" id="groupF">
         <div class="label">Fahrenheit (°F)</div>
-        <input type="number" id="inputF" class="temp-input" placeholder="e.g. 350" oninput="convert('F')" inputmode="decimal">
+        <input type="number" id="inputF" class="temp-input" placeholder="e.g. 350" oninput="handleInput('F')" inputmode="decimal">
         <button class="clr-btn" onclick="clearAll()">×</button>
     </div>
 
     <div class="input-group" id="groupGM">
         <div class="label">Gas Mark</div>
-        <input type="text" id="inputGM" class="temp-input" placeholder="1 - 9" oninput="convert('GM')" inputmode="decimal">
+        <input type="text" id="inputGM" class="temp-input" placeholder="1 - 9" oninput="handleInput('GM')" inputmode="decimal">
         <button class="clr-btn" onclick="clearAll()">×</button>
     </div>
 
     <div class="preset-group">
-        <button class="preset-btn" onclick="applyPreset(160)">160°C</button>
-        <button class="preset-btn" onclick="applyPreset(180)">180°C</button>
-        <button class="preset-btn" onclick="applyPreset(200)">200°C</button>
-        <button class="preset-btn" onclick="applyPreset(220)">220°C</button>
+        <button class="preset-btn" onclick="applyPreset(160, this)">160°C</button>
+        <button class="preset-btn" onclick="applyPreset(180, this)">180°C</button>
+        <button class="preset-btn" onclick="applyPreset(200, this)">200°C</button>
+        <button class="preset-btn" onclick="applyPreset(220, this)">220°C</button>
     </div>
 
     <div class="result-container" id="fanResultBox">
@@ -135,7 +136,7 @@
             <div class="fan-oven-title">FOR FAN / CONVECTION OVEN</div>
             <div class="fan-oven-value" id="fanValue">-</div>
         </div>
-        <p class="rule-text">Standard adjustment:<br>-20°C / -25°F from recipe.</p>
+        <p class="rule-text">Adjusted to nearest 5°C / 10°F<br>for easy dial setting.</p>
     </div>
 
     <div class="footer-btns">
@@ -168,35 +169,35 @@
         {gm: "8", c: 230, f: 450}, {gm: "9", c: 240, f: 475}
     ];
 
-    function applyPreset(temp) {
+    function applyPreset(temp, btn) {
+        document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
         document.getElementById('inputC').value = temp;
-        // Close keyboard
         document.querySelectorAll('input').forEach(i => i.blur());
         convert('C');
+    }
+
+    function handleInput(source) {
+        document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('selected'));
+        convert(source);
     }
 
     function convert(source) {
         const el = document.getElementById('input' + source);
         let valStr = el.value.trim();
-        let val = parseFloat(valStr);
-
-        if (valStr.length === 0) {
-            hideResults();
-            return;
-        }
+        if (valStr.length === 0) { hideResults(); return; }
 
         let c;
         if (source === 'C') {
-            c = val;
+            c = parseFloat(valStr);
             document.getElementById('inputF').value = Math.round(c * 9/5 + 32);
             document.getElementById('inputGM').value = findGM(c);
         } else if (source === 'F') {
-            c = (val - 32) * 5/9;
+            c = (parseFloat(valStr) - 32) * 5/9;
             document.getElementById('inputC').value = Math.round(c);
             document.getElementById('inputGM').value = findGM(c);
         } else if (source === 'GM') {
-            // Support fractional input 0.5 as 1/2
-            let numericGM = valStr === "1/2" ? 0.5 : (valStr === "1/4" ? 0.25 : parseFloat(valStr));
+            let numericGM = (valStr === "1/2" || valStr === "0.5") ? 0.5 : (valStr === "1/4" || valStr === "0.25" ? 0.25 : parseFloat(valStr));
             const match = gmTable.find(item => {
                 let itemVal = item.gm.includes('/') ? (item.gm === "1/2" ? 0.5 : 0.25) : parseFloat(item.gm);
                 return itemVal === numericGM;
@@ -204,20 +205,24 @@
             c = match ? match.c : (numericGM * 14) + 125;
             document.getElementById('inputC').value = Math.round(c);
             document.getElementById('inputF').value = Math.round(c * 9/5 + 32);
+            // Auto-format to fraction for visual consistency
+            if (valStr === "0.5") el.value = "1/2";
+            if (valStr === "0.25") el.value = "1/4";
         }
 
+        // Fan Oven Calculation with "Setting Rounding"
+        let fanC = Math.round((c - 20) / 5) * 5; // Round to nearest 5
+        let fanF = Math.round((c * 9/5 + 32 - 25) / 10) * 10; // Round to nearest 10
+
         document.getElementById('fanResultBox').style.display = 'block';
-        document.getElementById('fanValue').innerHTML = `${Math.round(c) - 20}<small>°C</small> / ${Math.round(c * 9/5 + 32) - 25}<small>°F</small>`;
+        document.getElementById('fanValue').innerHTML = `${fanC}<small>°C</small> / ${fanF}<small>°F</small>`;
         
         updateClrBtns();
     }
 
     function findGM(c) {
         if (c < 100) return "";
-        let closest = gmTable.reduce((prev, curr) => {
-            let prevC = prev.c, currC = curr.c;
-            return (Math.abs(currC - c) < Math.abs(prevC - c) ? curr : prev);
-        });
+        let closest = gmTable.reduce((prev, curr) => (Math.abs(curr.c - c) < Math.abs(prev.c - c) ? curr : prev));
         return closest.gm;
     }
 
@@ -234,6 +239,7 @@
             document.getElementById('input' + s).value = '';
             document.getElementById('group' + s).classList.remove('active');
         });
+        document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('selected'));
         hideResults();
     }
 
