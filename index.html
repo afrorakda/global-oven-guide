@@ -142,12 +142,12 @@
         <button class="preset-btn" onclick="applyPreset(220, this)">220°C</button>
     </div>
 
-    <div class="result-container" id="fanResultBox">
+    <div id="fanResultBox" class="result-container">
         <div class="fan-oven-box">
             <div class="fan-oven-title">FOR FAN / CONVECTION OVEN</div>
             <div class="fan-oven-value" id="fanValue">-</div>
         </div>
-        <p class="rule-text">Standard adjustment:<br>Approx. -20°C / -25°F from recipe.</p>
+        <p class="rule-text">Adjusted to nearest 5°C / 10°F<br>for easy dial setting.</p>
     </div>
 
     <div class="footer-btns">
@@ -180,8 +180,12 @@
         {gm: "8", c: 230, f: 450}, {gm: "9", c: 240, f: 475}
     ];
 
-    function applyPreset(temp, btn) {
+    function clearPresets() {
         document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('selected'));
+    }
+
+    function applyPreset(temp, btn) {
+        clearPresets();
         btn.classList.add('selected');
         document.getElementById('inputC').value = temp;
         closeKeyboard();
@@ -189,13 +193,14 @@
     }
 
     function applyFraction(frac) {
+        clearPresets(); // 分数ボタンを押した際にもプリセットの選択を解除
         document.getElementById('inputGM').value = frac;
         closeKeyboard();
         convert('GM');
     }
 
     function handleInput(source) {
-        document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('selected'));
+        clearPresets(); // 手入力が始まった際にもプリセットの選択を解除
         convert(source);
     }
 
@@ -230,7 +235,7 @@
             if (valStr === "0.25") el.value = "1/4";
         }
 
-        // Round to nearest 5 for C, nearest 10 for F (Standard dial steps)
+        // Round results for real-world oven dials
         let fanC = Math.round((c - 20) / 5) * 5;
         let fanF = Math.round((c * 9/5 + 32 - 25) / 10) * 10;
 
@@ -259,7 +264,7 @@
             document.getElementById('input' + s).value = '';
             document.getElementById('group' + s).classList.remove('active');
         });
-        document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('selected'));
+        clearPresets();
         hideResults();
     }
 
